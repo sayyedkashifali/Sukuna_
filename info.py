@@ -1,6 +1,7 @@
-import re, logging
+import re
+import logging
 from os import environ
-from Script import script
+from urllib.parse import urlparse
 
 def is_enabled(type, value):
     data = environ.get(type, str(value))
@@ -16,28 +17,38 @@ def is_valid_ip(ip):
     ip_pattern = r'\b(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b'
     return re.match(ip_pattern, ip) is not None
 
+def is_valid_url(url):
+    try:
+        result = urlparse(url)
+        return all([result.scheme in ['http', 'https'], result.netloc])
+    except ValueError:
+        return False
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
 # Bot information
-API_ID = environ.get('API_ID', '27317700')  #api id of your telegram id
+API_ID = environ.get('API_ID', '27317700')
 if len(API_ID) == 0:
     print('Error - API_ID is missing, exiting now')
     exit()
 else:
     API_ID = int(API_ID)
-API_HASH = environ.get('API_HASH', 'de1077f45e29e6abebcd2b9dd196be1d') #api hash of your telegram id
+API_HASH = environ.get('API_HASH', 'de1077f45e29e6abebcd2b9dd196be1d')
 if len(API_HASH) == 0:
     print('Error - API_HASH is missing, exiting now')
     exit()
-BOT_TOKEN = environ.get('BOT_TOKEN', '') #bot token from botfather
+BOT_TOKEN = environ.get('BOT_TOKEN', '')
 if len(BOT_TOKEN) == 0:
     print('Error - BOT_TOKEN is missing, exiting now')
     exit()
-PORT = int(environ.get('PORT', '80')) #don't change anything 
+PORT = int(environ.get('PORT', '80'))
 
 # Bot pics
 PICS = (environ.get('PICS', 'https://telegra.ph/file/58fef5cb458d5b29b0186.jpg https://telegra.ph/file/f0aa4f433132769f8970c.jpg https://telegra.ph/file/f515fbc2084592eca60a5.jpg https://telegra.ph/file/20dbdcffaa89bd3d09a74.jpg https://telegra.ph/file/6045ba953af4def846238.jpg')).split()
 
 # Bot Admins
-ADMINS = environ.get('ADMINS', '5881638979') #apni tg id daalo
+ADMINS = environ.get('ADMINS', '5881638979')
 if len(ADMINS) == 0:
     print('Error - ADMINS is missing, exiting now')
     exit()
@@ -51,7 +62,7 @@ if len(INDEX_CHANNELS) == 0:
 AUTH_CHANNEL = [int(auth_channels) for auth_channels in environ.get('AUTH_CHANNEL', '-1002238367718').split()]
 if len(AUTH_CHANNEL) == 0:
     print('Info - AUTH_CHANNEL is empty')
-LOG_CHANNEL = environ.get('LOG_CHANNEL', '-1002189558653') #bot log channel -1005293546253
+LOG_CHANNEL = environ.get('LOG_CHANNEL', '-1002189558653')
 if len(LOG_CHANNEL) == 0:
     print('Error - LOG_CHANNEL is missing, exiting now')
     exit()
@@ -60,7 +71,7 @@ else:
 IS_FSUB = is_enabled('IS_FSUB', True)
 
 # support group
-SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1002189558653') #support group id ex:  -1002936246860
+SUPPORT_GROUP = environ.get('SUPPORT_GROUP', '-1002189558653')
 if len(SUPPORT_GROUP) == 0:
     print('Error - SUPPORT_GROUP is missing, exiting now')
     exit()
@@ -68,7 +79,7 @@ else:
     SUPPORT_GROUP = int(SUPPORT_GROUP)
 
 # MongoDB information
-DATABASE_URL = environ.get('DATABASE_URL', "mongodb+srv://sayyed:sHaTuyfkonuF5BLa@cluster0.rm44u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0") #mongo db url
+DATABASE_URL = environ.get('DATABASE_URL', "mongodb+srv://sayyed:sHaTuyfkonuF5BLa@cluster0.rm44u.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 if len(DATABASE_URL) == 0:
     print('Error - DATABASE_URL is missing, exiting now')
     exit()
@@ -83,24 +94,24 @@ TUTORIAL = environ.get("TUTORIAL", "https://t.me/sayyed_kashifali")
 VERIFY_TUTORIAL = environ.get("VERIFY_TUTORIAL", "https://t.me/")
 
 # Bot settings
-DELETE_TIME = int(environ.get('DELETE_TIME', 3600)) # Add time in seconds 
+DELETE_TIME = int(environ.get('DELETE_TIME', 3600))
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
-MAX_BTN = int(environ.get('MAX_BTN', 10)) #don't change anything in Language 
+MAX_BTN = int(environ.get('MAX_BTN', 10))
 LANGUAGES = [language.lower() for language in environ.get('LANGUAGES', 'english hindi telugu tamil kannada malayalam').split()]
-IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", script.IMDB_TEMPLATE)
-FILE_CAPTION = environ.get("FILE_CAPTION", script.FILE_CAPTION)
+IMDB_TEMPLATE = environ.get("IMDB_TEMPLATE", "default_template")
+FILE_CAPTION = environ.get("FILE_CAPTION", "default_caption")
 SHORTLINK_URL = environ.get("SHORTLINK_URL", "onepagelink.in")
 SHORTLINK_API = environ.get("SHORTLINK_API", "f646357aa129cfbd7eb59bcba428096ab54ca950")
-VERIFY_EXPIRE = int(environ.get('VERIFY_EXPIRE', 86400)) # Add time in seconds
-WELCOME_TEXT = environ.get("WELCOME_TEXT", script.WELCOME_TEXT)
+VERIFY_EXPIRE = int(environ.get('VERIFY_EXPIRE', 86400))
+WELCOME_TEXT = environ.get("WELCOME_TEXT", "Welcome to the bot!")
 INDEX_EXTENSIONS = [extensions.lower() for extensions in environ.get('INDEX_EXTENSIONS', 'mp4 mkv').split()]
 STICKERS_IDS = (
     "CAACAgEAAxkBAAIX7WbS3Th8UaoX588h_NKsHWLNORMLAAJ_AwACIPOJRhs9TwfAhiWKHgQ"
 ).split()
 
-# boolean settings 
-GROUP_FSUB = is_enabled('GROUP_FSUB', False) 
-PM_SEARCH = is_enabled('PM_SEARCH', True) #switch True or False for searching results in bot pm😃
+# boolean settings
+GROUP_FSUB = is_enabled('GROUP_FSUB', False)
+PM_SEARCH = is_enabled('PM_SEARCH', True)
 IS_VERIFY = is_enabled('IS_VERIFY', False)
 AUTO_DELETE = is_enabled('AUTO_DELETE', True)
 WELCOME = is_enabled('WELCOME', True)
@@ -112,27 +123,28 @@ IMDB = is_enabled('IMDB', True)
 SPELL_CHECK = is_enabled("SPELL_CHECK", True)
 SHORTLINK = is_enabled('SHORTLINK', False)
 
-
-PAYMENT_QR = environ.get('PAYMENT_QR', 'http://graph.org/file/cacbbea472e5a48ce0d64.jpg') #telegraph link of your QR code 
-UPI_ID = environ.get('UPI_ID', 'Rishikesh-sharma09@axl') # Add your upi id here
+PAYMENT_QR = environ.get('PAYMENT_QR', 'http://graph.org/file/cacbbea472e5a48ce0d64.jpg')
+UPI_ID = environ.get('UPI_ID', 'Rishikesh-sharma09@axl')
 # for stream
-IS_STREAM = is_enabled('IS_STREAM', True) #true if you want stream feature active in your bot
-BIN_CHANNEL = environ.get("BIN_CHANNEL", "-1002189558653") #if is_stream = true then add a channel id ex: -10026393639
+IS_STREAM = is_enabled('IS_STREAM', True)
+BIN_CHANNEL = environ.get("BIN_CHANNEL", '-1002189558653')
 if len(BIN_CHANNEL) == 0:
     print('Error - BIN_CHANNEL is missing, exiting now')
     exit()
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
-URL = environ.get("URL", "https://raw-gilli-nchautofilter-96b57431.koyeb.app/") #if heroku then paste the app link here ex: https://heroku......./
+
+URL = environ.get("URL", "https://raw-gilli-nchautofilter-96b57431.koyeb.app/")
+logging.debug(f'URL being validated: {URL}')
 if len(URL) == 0:
     print('Error - URL is missing, exiting now')
     exit()
 else:
-    if URL.startswith(('https://', 'http://')):
+    if is_valid_url(URL):
         if not URL.endswith("/"):
             URL += '/'
     elif is_valid_ip(URL):
         URL = f'http://{URL}/'
     else:
-        print('Error - URL is not valid, exiting now')
+        print(f'Error - URL is not valid: {URL}, exiting now')
         exit()
