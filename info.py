@@ -18,6 +18,9 @@ def is_valid_ip(ip):
     return re.match(ip_pattern, ip) is not None
 
 def is_valid_url(url):
+    # Ensure the URL has a scheme if it's missing
+    if not urlparse(url).scheme:
+        url = 'http://' + url
     try:
         result = urlparse(url)
         return all([result.scheme in ['http', 'https'], result.netloc])
@@ -134,7 +137,7 @@ if len(BIN_CHANNEL) == 0:
 else:
     BIN_CHANNEL = int(BIN_CHANNEL)
 
-URL = environ.get("URL", "https://raw-gilli-nchautofilter-96b57431.koyeb.app/")
+URL = environ.get("URL", "raw-gilli-nchautofilter-96b57431.koyeb.app/")
 logging.debug(f'URL being validated: {URL}')
 if len(URL) == 0:
     print('Error - URL is missing, exiting now')
